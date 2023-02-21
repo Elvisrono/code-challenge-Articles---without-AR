@@ -1,5 +1,5 @@
 class Magazine
-    attr_accessor :name, :category
+    attr_reader :name, :category
   
     @@all = []
   
@@ -10,22 +10,25 @@ class Magazine
     end
   
     def self.all
-      @@all.dup.freeze
+      @@all
+    end
+  
+    def articles
+      Article.all.select { |article| article.magazine == self }
+    end
+  
+    def authors
+      articles.map { |article| article.author }.uniq
     end
   
     def self.find_by_name(name)
       @@all.find { |magazine| magazine.name == name }
     end
-
-    def article_titles
-    articles.map(&:title)
+  
+    def summary
+      puts "Name: #{name}"
+      puts "Category: #{category}"
+      puts "Authors: #{authors.map(&:full_name).join(', ')}"
+      puts "Number of Articles: #{articles.length}"
+    end
   end
-
-  def contributing_authors
-    articles.group_by(&:author).select { |_, articles| articles.size > 2 }.keys
-  end
-
-  def articles
-    Article.all.select { |article| article.magazine == self }
-  end
-end
